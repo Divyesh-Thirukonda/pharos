@@ -14,7 +14,9 @@ const empty={type:'FeatureCollection' as const,features:[]};
 const initial={center:[-73.992797766009,40.7429025573452] as [number,number],zoom:14.6,pitch:62,bearing:-28};
 const reduced=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const framePadding=(m?:MapInstance)=>({left:0,right:window.innerWidth<=760?0:430,top:0,bottom:window.innerWidth<=760?Math.round((m?.getContainer().clientHeight??window.innerHeight)*.56):0});
-const historyColor:ExpressionSpecification=['interpolate',['linear'],['get','weight'],0,'#d2a158',20,'#bd694a',40,'#80526f'];
+// One ramp for the heat layer and the dots, keyed to real injury-crash counts (the busiest corner has about 17).
+const RAMP=['#f0c75e','#e8993f','#d6573f','#a8244f','#6a1b4d'] as const;
+const historyColor:ExpressionSpecification=['interpolate',['linear'],['get','weight'],1,RAMP[0],4,RAMP[1],8,RAMP[2],12,RAMP[3],17,RAMP[4]];
 const pointData=(items:Array<{id:string;lon:number;lat:number;name:string}>,kind:string)=>({type:'FeatureCollection' as const,features:items.map(item=>({type:'Feature' as const,geometry:{type:'Point' as const,coordinates:[item.lon,item.lat]},properties:{id:item.id,name:item.name,kind}}))});
 
 function pharosStyle(style:StyleSpecification){
@@ -78,9 +80,9 @@ const CityMap=forwardRef<CityMapHandle,Props>(function CityMap(props,ref){
     m.setLight({anchor:'map',color:'#fff9eb',intensity:.45,position:[1.4,140,35]});
     for(const id of ['hotspots','cameras','selected','live-cameras'])m.addSource(id,{type:'geojson',data:empty});
     // Historical crash/injury records only. Camera availability never changes this heat layer.
-    m.addLayer({id:'hotspot-heat',type:'heatmap',source:'hotspots',maxzoom:18,paint:{'heatmap-weight':['interpolate',['linear'],['get','weight'],0,0,3,.35,30,1],'heatmap-intensity':['interpolate',['linear'],['zoom'],11,.8,15,1.5,18,2.2],'heatmap-radius':['interpolate',['linear'],['zoom'],11,10,15,30,18,60],'heatmap-opacity':.68,'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(210,161,88,0)',.2,'rgba(210,161,88,.28)',.45,'rgba(210,161,88,.55)',.7,'rgba(189,105,74,.75)',1,'rgba(128,82,111,.86)']}},firstLabel);
-    m.addLayer({id:'hotspot-halo',type:'circle',source:'hotspots',paint:{'circle-radius':['interpolate',['linear'],['get','weight'],0,10,40,22],'circle-color':historyColor,'circle-opacity':.22,'circle-blur':.6}});
-    m.addLayer({id:'hotspot-points',type:'circle',source:'hotspots',paint:{'circle-radius':['interpolate',['linear'],['get','weight'],0,4,40,9],'circle-color':historyColor,'circle-stroke-width':2,'circle-stroke-color':'#fffdf6'}});
+        m.addLayer({id:'hotspot-heat',type:'heatmap',source:'hotspots',maxzoom:18,paint:{'heatmap-weight':['interpolate',['linear'],['get','weight'],0,0,1,.18,4,.4,8,.65,17,1],'heatmap-intensity':['interpolate',['linear'],['zoom'],11,1.2,14,1.9,17,2.8],'heatmap-radius':['interpolate',['linear'],['zoom'],11,22,13,34,15,50,17,80],'heatmap-opacity':.86,'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(240,199,94,0)',.12,'rgba(240,199,94,.45)',.35,'rgba(232,153,63,.72)',.6,'rgba(214,87,63,.84)',.82,'rgba(168,36,79,.92)',1,'rgba(106,27,77,.96)']}},firstLabel);
+    m.addLayer({id:'hotspot-halo',type:'circle',source:'hotspots',paint:{'circle-radius':['interpolate',['linear'],['get','weight'],1,10,17,24],'circle-color':historyColor,'circle-opacity':.28,'circle-blur':.6}});
+    m.addLayer({id:'hotspot-points',type:'circle',source:'hotspots',paint:{'circle-radius':['interpolate',['linear'],['get','weight'],1,4,17,10],'circle-color':historyColor,'circle-stroke-width':2,'circle-stroke-color':'#fffdf6'}});
     m.addLayer({id:'camera-halo',type:'circle',source:'cameras',paint:{'circle-radius':11,'circle-color':'#527f75','circle-opacity':.14,'circle-blur':.6}});
     m.addLayer({id:'camera-points',type:'circle',source:'cameras',paint:{'circle-radius':['interpolate',['linear'],['zoom'],11,3.5,15,5,18,6],'circle-color':'#fafbf6','circle-stroke-width':2,'circle-stroke-color':'#527f75'}});
     m.addLayer({id:'live-camera-halo',type:'circle',source:'live-cameras',paint:{'circle-radius':19,'circle-color':'#216b65','circle-opacity':.24,'circle-blur':.5}});

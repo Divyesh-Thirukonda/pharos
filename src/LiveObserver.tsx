@@ -38,6 +38,12 @@ export function CapturedVideo({job}:{job:VisionJob}){
   <div className="overlay-controls"><button aria-pressed={overlay} className={overlay?'enabled':''} onClick={()=>setOverlay(!overlay)}><ScanLine size={13}/>Object boxes</button>{canProject?<button aria-pressed={showProjection} className={forecast?'enabled':''} onClick={()=>{setForecast(!forecast);setOverlay(true);}}><Activity size={13}/>Replay projection</button>:null}<span>{time.toFixed(1)} / {job.video?.durationSec?.toFixed(1)??'—'}s</span></div>
   {showProjection?<p className="projection-note">Up to 2s projected from replay +{(frame?.timeSec??time).toFixed(1)}s · not a live warning.</p>:null}
   {showProjection&&overlap.length?<p className="projection-alert">Potential image overlap · {overlap.length} {overlap.length===1?'pair':'pairs'} to review at +{(frame?.timeSec??time).toFixed(1)}s.</p>:null}
+  {job.nearMiss&&!job.nearMiss.skipped?<div className="near-miss" aria-live="polite">
+   <strong>Measured near-miss candidates</strong>
+   {job.nearMiss.events.length?<ul>{job.nearMiss.events.map((e,i)=><li key={i}><b>{e.classes[0]} and {e.classes[1]}</b> at +{e.t_closest.toFixed(1)}s · closest about {e.min_dist_m.toFixed(1)} m · closing about {e.peak_closing_mps.toFixed(1)} m/s{e.ttc_s!==null?` · time to collision about ${e.ttc_s.toFixed(1)} s`:''}</li>)}</ul>
+    :<p>No candidate in this window. That does not mean the street is safe: detections can be missed and the window is short.</p>}
+   <small>Approximate: metres come from box ground points, no camera calibration. Candidates for review, not alarms.</small>
+  </div>:null}
   <div className="capture-timestamps"><span><Clock size={11}/>{job.source?.sourceKind==='recorded_video'?'Excerpt prepared':'Window received'} {clockTime(job.captureStartedAt)} – {clockTime(job.captureEndedAt)} ET</span>{job.completedAt?<span>Reviewed {clockTime(job.completedAt)} ET</span>:null}</div>
   <details className="analysis-limits capture-details"><summary>Capture details</summary>
    <p className="capture-models">{job.models?.yolo??'YOLO'} object detections. Boxes show model estimates; frame detections are not counts of unique people or events.</p>

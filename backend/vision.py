@@ -341,6 +341,15 @@ async def run_yolo(job: dict, encoded: str) -> None:
             job["tracking"]["limitations"].append("Forecasts are disabled for archive video because camera motion is not compensated.")
     except ImportError:
         pass
+    # Measured near-miss candidates (distance, closing speed, time to collision). Fixed cameras only.
+    if job["source"]["sourceKind"] == "live_video":
+        try:
+            from .nearmiss import measure
+            job["nearMiss"] = measure(job["detections"]["frames"])
+        except Exception as exc:  # never let this block the rest of the review
+            job["nearMiss"] = {"events": [], "error": f"near-miss measurement failed: {type(exc).__name__}", "limitations": []}
+    else:
+        job["nearMiss"] = {"events": [], "skipped": "Archive cameras may move, so distances are not measured.", "limitations": []}
 
 
 def visible_answer(content: str) -> str:
