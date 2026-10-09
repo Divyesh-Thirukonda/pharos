@@ -18,7 +18,7 @@ LIMITATIONS = [
     "Associations use class, bounding-box overlap and image position; they can be wrong.",
     "Projection assumes a fixed camera and short-term constant image velocity; turns and camera movement invalidate it.",
     "Overlapping projected boxes can be separated in depth. These flags do not establish a collision or near miss.",
-    "No camera calibration: no physical speed, distance, time to collision, or post-encroachment time is measured.",
+    "No camera calibration: image-plane tracks carry no physical units. Approximate metres appear only under near-miss candidates, from box ground points.",
     "Missing detections and ambiguous associations end a track; absence of a flag does not establish safety.",
 ]
 
