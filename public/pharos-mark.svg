@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="pharos-title pharos-desc">
+  <title id="pharos-title">PharOS</title>
+  <desc id="pharos-desc">An emerald headdress frames a protective eye above a small lighthouse. Gold light shines from its lantern; sage bands echo the city grid.</desc>
+  <path d="M19 8h26l4 12H15L19 8Z" fill="#176C68"/>
+  <path d="M15 25h9l-5 29L6 49l9-24Zm34 0h-9l5 29 13-5-9-24Z" fill="#176C68"/>
+  <path d="M12.75 31h10.22l-.69 4H11.25l1.5-4Zm-3 8h11.84l-.69 4H8.25l1.5-4Zm-2.06 8h12.52l-.69 4.02L7.69 47Zm43.56-16H41.03l.69 4h11.03l-1.5-4Zm3 8H42.41l.69 4h12.65l-1.5-4Zm2.06 8H43.79l.69 4.02L56.31 47Z" fill="#B6C7A8"/>
+  <path d="M20.5 29c3.8-4.67 7.63-7 11.5-7s7.7 2.33 11.5 7c-3.8 4.67-7.63 7-11.5 7s-7.7-2.33-11.5-7Z" stroke="#176C68" stroke-width="2.75" stroke-linejoin="round"/>
+  <circle cx="32" cy="29" r="3.5" fill="#D5AC54"/>
+  <path d="m22 38 6 2.5v3L22 46v-8Zm20 0-6 2.5v3l6 2.5v-8Z" fill="#D5AC54"/>
+  <path d="m27 39 5-3 5 3H27Z" fill="#176C68"/>
+  <path d="M29 40h6v5h-6z" fill="#D5AC54"/>
+  <path d="M27.5 45h9v2h-9zM29.5 47h5l3 10h-11l3-10ZM25 57h14v3H25z" fill="#176C68"/>
+  <path d="M31 52h2v5h-2z" fill="#F7F8F4"/>
+</svg>

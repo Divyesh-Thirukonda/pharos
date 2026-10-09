@@ -1,0 +1,53 @@
+{
+  "query": "Identify directly visible potential traffic conflicts, yielding failures, close passes, or abrupt evasive actions in this window. Distinguish observed movement from uncertain interpretation.",
+  "cosmosObservation": "SCENE OBSERVATIONS\n- The scene is a multi-lane urban road with a central median and trees lining the sides, viewed from an elevated perspective. Traffic is moving in both directions, with vehicles including a white car, a black car, a purple bus, and a pink van.  \n- A white car is traveling straight in the rightmost lane, while a black car is positioned in the adjacent lane to its left.  \n- The black car begins to drift toward the right, encroaching into the lane occupied by the white car.  \n- As the black car continues its lateral movement, it passes very close to the white car, creating a near-miss situation.  \n- The white car maintains its course and does not appear to brake or swerve significantly in response to the black car\u2019s encroachment.  \n\nCRITERION VERDICT\n- Potential traffic conflict: Yes. The black car drifts into the lane of the white car, resulting in a close pass.  \n- Yielding failure: Not clearly observed. The white car does not explicitly yield, but it continues straight without significant evasive action.  \n- Close pass: Yes. The black car passes the white car at very close proximity.  \n- Abrupt evasive action: No. The white car does not exhibit a sudden change in speed or direction.  \n\nLIMITATIONS\n- The interaction is brief and occurs in a single frame, making it difficult to fully assess the exact nature of the conflict.  \n- The video does not provide information about the cause of the black car\u2019s drift or the intentions of the drivers involved.",
+  "analysis": {
+    "verdict": "supported",
+    "summary": "A potential traffic conflict is observed between a white car and a black car, with the black car drifting into the white car's lane and creating a near-miss situation.",
+    "observations": [
+      {
+        "detail": "The black car drifts into the lane of the white car, resulting in a close pass.",
+        "startSec": null,
+        "endSec": null,
+        "evidence": "direct_video"
+      },
+      {
+        "detail": "The white car maintains its course and does not appear to brake or swerve significantly in response to the black car's encroachment.",
+        "startSec": null,
+        "endSec": null,
+        "evidence": "direct_video"
+      }
+    ],
+    "nextSteps": [
+      {
+        "title": "Review turning and yielding conflicts",
+        "detail": "Inspect crossing paths, turn movements and yielding with continuous footage. Consider a leading pedestrian interval after a signal and accessibility review.",
+        "sourceUrl": "https://highways.dot.gov/safety/proven-safety-countermeasures/leading-pedestrian-interval"
+      },
+      {
+        "title": "Collect calibrated conflict evidence",
+        "detail": "Use stable-camera video with known frame timing and ground-plane calibration before estimating closing speed, time to collision or stopping margin. Review evasive action and lighting context.",
+        "sourceUrl": "https://www.fhwa.dot.gov/publications/research/safety/03050/"
+      }
+    ],
+    "limitations": [
+      "Direct video analysis is qualitative and requires human review; no calibrated speed, TTC or stopping margin is available.",
+      "Live acquisition timestamps are server times; the camera's capture clock and broadcast delay are unverified.",
+      "The interaction is brief and occurs in a single frame, making it difficult to fully assess the exact nature of the conflict.",
+      "The video does not provide information about the cause of the black car's drift or the intentions of the drivers involved."
+    ],
+    "source": "fresh_video_inference",
+    "assessmentStatus": "connected"
+  },
+  "video": {
+    "durationSec": 8.0,
+    "fps": 4.0,
+    "width": 640,
+    "height": 352,
+    "sha256": "792b420b83462c6c510c96097869bdfa40fb1d5e808d96864c619607a5c69676",
+    "bytes": 761678,
+    "sampling": "Video transcoded to 4 fps, at most 640 pixels wide; video-relative timestamps refer to this exact analyzed window.",
+    "sourceCapturedAt": null,
+    "captureClock": "server_acquisition_time"
+  }
+}

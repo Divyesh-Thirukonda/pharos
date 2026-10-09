@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="pharos-mono-title pharos-mono-desc">
+  <title id="pharos-mono-title">PharOS monochrome</title>
+  <desc id="pharos-mono-desc">A geometric headdress and protective eye above a lighthouse and its light. Open bands preserve the city grid motif in one color.</desc>
+  <defs>
+    <mask id="pharos-wing-bands" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+      <path d="M15 25h9l-5 29L6 49l9-24Zm34 0h-9l5 29 13-5-9-24Z" fill="white"/>
+      <path d="M12.75 31h10.22l-.69 4H11.25l1.5-4Zm-3 8h11.84l-.69 4H8.25l1.5-4Zm-2.06 8h12.52l-.69 4.02L7.69 47Zm43.56-16H41.03l.69 4h11.03l-1.5-4Zm3 8H42.41l.69 4h12.65l-1.5-4Zm2.06 8H43.79l.69 4.02L56.31 47Z" fill="black"/>
+    </mask>
+  </defs>
+  <path d="M19 8h26l4 12H15L19 8Z" fill="currentColor"/>
+  <path d="M15 25h9l-5 29L6 49l9-24Zm34 0h-9l5 29 13-5-9-24Z" fill="currentColor" mask="url(#pharos-wing-bands)"/>
+  <path d="M20.5 29c3.8-4.67 7.63-7 11.5-7s7.7 2.33 11.5 7c-3.8 4.67-7.63 7-11.5 7s-7.7-2.33-11.5-7Z" stroke="currentColor" stroke-width="2.75" stroke-linejoin="round"/>
+  <circle cx="32" cy="29" r="3.5" fill="currentColor"/>
+  <path d="m22 38 6 2.5v3L22 46v-8Zm20 0-6 2.5v3l6 2.5v-8Zm-15 1 5-3 5 3H27ZM29 40h6v5h-6zM27.5 45h9v2h-9z" fill="currentColor"/>
+  <path d="M29.5 47h5l3 10h-11l3-10ZM25 57h14v3H25zM31 52v5h2v-5h-2Z" fill="currentColor" fill-rule="evenodd"/>
+</svg>

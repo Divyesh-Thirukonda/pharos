@@ -1,0 +1,3 @@
+-r requirements.txt
+# Optional; the application works without installing this SDK.
+weave>=0.52

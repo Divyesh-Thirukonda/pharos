@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title">
+  <title id="title">PharOS</title>
+  <path d="M19 8h26l4 12H15L19 8ZM15 25h9l-5 29L6 49l9-24Zm34 0h-9l5 29 13-5-9-24Z" fill="#176C68"/>
+  <path d="M20.5 29c7.6-9.33 15.4-9.33 23 0-7.6 9.33-15.4 9.33-23 0Z" stroke="#176C68" stroke-width="3"/>
+  <circle cx="32" cy="29" r="3.5" fill="#D5AC54"/>
+  <path d="m22 38 7 3v3l-7 3v-9Zm20 0-7 3v3l7 3v-9ZM29 40h6v5h-6z" fill="#D5AC54"/>
+  <path d="m27 39 5-3 5 3H27ZM28 45h8v3h-8zM30 48h4l3 9H27l3-9ZM25 57h14v3H25z" fill="#176C68"/>
+</svg>
