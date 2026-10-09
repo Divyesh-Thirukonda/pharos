@@ -15,7 +15,7 @@ const initial={center:[-73.992797766009,40.7429025573452] as [number,number],zoo
 const reduced=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const framePadding=(m?:MapInstance)=>({left:0,right:window.innerWidth<=760?0:430,top:0,bottom:window.innerWidth<=760?Math.round((m?.getContainer().clientHeight??window.innerHeight)*.56):0});
 // One ramp for the heat layer and the dots, keyed to real injury-crash counts (the busiest corner has about 17).
-const RAMP=['#f0c75e','#e8993f','#d6573f','#a8244f','#6a1b4d'] as const;
+const RAMP=['#f2d16b','#f0a23a','#dc2f2f','#9b1020','#520a16'] as const;
 const historyColor:ExpressionSpecification=['interpolate',['linear'],['get','weight'],1,RAMP[0],4,RAMP[1],8,RAMP[2],12,RAMP[3],17,RAMP[4]];
 const pointData=(items:Array<{id:string;lon:number;lat:number;name:string}>,kind:string)=>({type:'FeatureCollection' as const,features:items.map(item=>({type:'Feature' as const,geometry:{type:'Point' as const,coordinates:[item.lon,item.lat]},properties:{id:item.id,name:item.name,kind}}))});
 
@@ -80,7 +80,7 @@ const CityMap=forwardRef<CityMapHandle,Props>(function CityMap(props,ref){
     m.setLight({anchor:'map',color:'#fff9eb',intensity:.45,position:[1.4,140,35]});
     for(const id of ['hotspots','cameras','selected','live-cameras'])m.addSource(id,{type:'geojson',data:empty});
     // Historical crash/injury records only. Camera availability never changes this heat layer.
-    m.addLayer({id:'hotspot-heat',type:'heatmap',source:'hotspots',paint:{'heatmap-weight':['interpolate',['linear'],['get','weight'],0,0,1,.18,4,.4,8,.65,17,1],'heatmap-intensity':['interpolate',['linear'],['zoom'],11,1.2,14,1.9,17,2.8],'heatmap-radius':['interpolate',['linear'],['zoom'],11,22,13,34,15,50,17,80],'heatmap-opacity':.86,'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(240,199,94,0)',.12,'rgba(240,199,94,.45)',.35,'rgba(232,153,63,.72)',.6,'rgba(214,87,63,.84)',.82,'rgba(168,36,79,.92)',1,'rgba(106,27,77,.96)']}});
+    m.addLayer({id:'hotspot-heat',type:'heatmap',source:'hotspots',paint:{'heatmap-weight':['interpolate',['linear'],['get','weight'],0,0,1,.18,4,.4,8,.65,17,1],'heatmap-intensity':['interpolate',['linear'],['zoom'],11,1.2,14,1.9,17,2.8],'heatmap-radius':['interpolate',['linear'],['zoom'],11,22,13,34,15,50,17,80],'heatmap-opacity':.86,'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(242,209,107,0)',.12,'rgba(242,209,107,.5)',.32,'rgba(240,162,58,.78)',.55,'rgba(220,47,47,.88)',.78,'rgba(155,16,32,.94)',1,'rgba(82,10,22,.97)']}});
     m.addLayer({id:'hotspot-halo',type:'circle',source:'hotspots',paint:{'circle-radius':['interpolate',['linear'],['get','weight'],1,14,17,34],'circle-color':historyColor,'circle-opacity':.4,'circle-blur':.45}});
     m.addLayer({id:'hotspot-points',type:'circle',source:'hotspots',paint:{'circle-radius':['interpolate',['linear'],['get','weight'],1,4,17,10],'circle-color':historyColor,'circle-stroke-width':2,'circle-stroke-color':'#fffdf6'}});
     m.addLayer({id:'camera-halo',type:'circle',source:'cameras',paint:{'circle-radius':11,'circle-color':'#527f75','circle-opacity':.14,'circle-blur':.6}});
