@@ -2,7 +2,7 @@
 
 PharOS is a Manhattan street-safety workspace built with React, TypeScript, MapLibre, and FastAPI. A 3D map and a right sidebar bring crash history, street cameras, and actual-video review together. The selected demo focus is Sixth Avenue and West 23rd Street. Its identity combines an emerald headdress, protective eye, and lighthouse with gold beams.
 
-**Hosted app:** [Open PharOS](https://team-12-app.thecosmoslabs.com/app/?v=beacon). This versioned link avoids HTML retained by an older cached release.
+**Hosted app:** [Open PharOS](https://team-12-app.thecosmoslabs.com/app/).
 
 ## Run locally
 

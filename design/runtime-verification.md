@@ -1,6 +1,6 @@
 # PharOS runtime verification
 
-Public app: [Open PharOS](https://team-12-app.thecosmoslabs.com/app/?v=live). The versioned link avoids older cached HTML. Checks below are from October 9, 2026; timestamps are UTC. No credentials are included. Named files under `artifacts/` are local verification records excluded from the published repository; screenshot descriptions below are historical records, not current interface previews.
+Public app: [Open PharOS](https://team-12-app.thecosmoslabs.com/app/). Checks below are from October 9, 2026; timestamps are UTC. No credentials are included. Named files under `artifacts/` are local verification records excluded from the published repository; screenshot descriptions below are historical records, not current interface previews.
 
 **Verified inference result:** the deployment tested at **18:46 UTC** completed a fresh Vestry Street video job with all three model stages connected, no errors, `not_observed`, and no recommended interventions. A recorded-video job also completed earlier, with browser playback and visible object boxes. That deployment added temporal evidence requirements after a prior model made an unsupported single-frame conflict claim. These are functional checks, not detection-accuracy measurements or confirmed near-miss findings.
 
@@ -103,7 +103,7 @@ No manual trajectory lab is part of the current observation workflow. Historical
 
 ## Sidebar release verification — October 9, 2026, 19:18 UTC
 
-The redesigned app is deployed at https://team-12-app.thecosmoslabs.com/app/?v=beacon. Release bundle SHA-256: `3311c3947cdb50eb9428b453b02a147b833f0cf9c932b878e13ef246cbfd59b8`. Frontend entry: `index-DXpbwjoM.js`. The release exposes actual hourly bins, the focus street pair outside the top 100, five sorted continuous feeds, and service health/operation status. Local checks passed 60 backend and 16 frontend tests plus the production build.
+The redesigned app is deployed at https://team-12-app.thecosmoslabs.com/app/. Release bundle SHA-256: `3311c3947cdb50eb9428b453b02a147b833f0cf9c932b878e13ef246cbfd59b8`. Frontend entry: `index-DXpbwjoM.js`. The release exposes actual hourly bins, the focus street pair outside the top 100, five sorted continuous feeds, and service health/operation status. Local checks passed 60 backend and 16 frontend tests plus the production build.
 
 A browser-triggered live job `7fd8969f40f947968bf02141462239e6` used West Street at West 23rd Street at 19:17:56 UTC. It captured eight seconds at 352×240 and four frames per second. Capture took 6.157 s, YOLO 0.799 s, Cosmos 2.597 s, and W&B assessment 5.279 s; total 14.034 s. Its video hash was `a14ddf5a14fb318c88e85ae8eadc1b2442ae516fa3f6cd43b451259efddfc11e`; Cosmos recorded the same hash and actual-video-bytes input. The result was `not_observed`, with no next steps or component errors. This is successful inference on real footage, not a near-miss accuracy claim.
 
@@ -114,3 +114,7 @@ At 19:21–19:24 UTC, a browser search for `distracted driver` returned 15 VAST 
 ## Logo cache correction
 
 The initial sidebar release served current application code, but Cloudflare still cached the old unversioned `/app/pharos-mark.svg` (smile) asset. A cache-busted request confirmed the lighthouse bytes were already deployed. The canonical logo and favicon now live under `src/assets` and are processed by Vite into content-hashed URLs. The application and HTML favicon reference those generated files, so future logo edits change their URLs automatically. This fixes the stale logo without requiring visitors to clear their cache.
+
+## Main URL and heatmap toggle
+
+The main URL is https://team-12-app.thecosmoslabs.com/app/ with no version query. Legacy `v` query parameters are removed by the frontend while preserving other query parameters and the hash. The heatmap control previously hid only the density layer, leaving crash markers visible; H now toggles density, halos, markers, and their hit targets together. The control displays On/Off, repeated keydown events are ignored, and shortcuts do not run while the connections dialog is open or a text field is active. Heat rendering remains visible at close zoom and the crash glow is stronger in the 3D view. The production build succeeds.

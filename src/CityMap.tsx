@@ -74,12 +74,12 @@ const CityMap=forwardRef<CityMapHandle,Props>(function CityMap(props,ref){
    current.on('resize',resize);
    current.on('load',()=>{
     if(disposed)return;
-    const m=current!,firstLabel=m.getStyle().layers.find(layer=>layer.type==='symbol')?.id;
+    const m=current!;
     m.setLight({anchor:'map',color:'#fff9eb',intensity:.45,position:[1.4,140,35]});
     for(const id of ['hotspots','cameras','selected','live-cameras'])m.addSource(id,{type:'geojson',data:empty});
     // Historical crash/injury records only. Camera availability never changes this heat layer.
-    m.addLayer({id:'hotspot-heat',type:'heatmap',source:'hotspots',maxzoom:18,paint:{'heatmap-weight':['interpolate',['linear'],['get','weight'],0,0,3,.35,30,1],'heatmap-intensity':['interpolate',['linear'],['zoom'],11,.8,15,1.5,18,2.2],'heatmap-radius':['interpolate',['linear'],['zoom'],11,10,15,30,18,60],'heatmap-opacity':.68,'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(210,161,88,0)',.2,'rgba(210,161,88,.28)',.45,'rgba(210,161,88,.55)',.7,'rgba(189,105,74,.75)',1,'rgba(128,82,111,.86)']}},firstLabel);
-    m.addLayer({id:'hotspot-halo',type:'circle',source:'hotspots',paint:{'circle-radius':['interpolate',['linear'],['get','weight'],0,10,40,22],'circle-color':historyColor,'circle-opacity':.22,'circle-blur':.6}});
+    m.addLayer({id:'hotspot-heat',type:'heatmap',source:'hotspots',paint:{'heatmap-weight':['interpolate',['linear'],['get','weight'],0,0,3,.35,30,1],'heatmap-intensity':['interpolate',['linear'],['zoom'],11,.8,15,1.5,18,2.2],'heatmap-radius':['interpolate',['linear'],['zoom'],11,18,15,38,19,68],'heatmap-opacity':.78,'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(210,161,88,0)',.2,'rgba(210,161,88,.28)',.45,'rgba(210,161,88,.55)',.7,'rgba(189,105,74,.75)',1,'rgba(128,82,111,.86)']}});
+    m.addLayer({id:'hotspot-halo',type:'circle',source:'hotspots',paint:{'circle-radius':['interpolate',['linear'],['get','weight'],0,20,20,42],'circle-color':historyColor,'circle-opacity':.55,'circle-blur':.35}});
     m.addLayer({id:'hotspot-points',type:'circle',source:'hotspots',paint:{'circle-radius':['interpolate',['linear'],['get','weight'],0,4,40,9],'circle-color':historyColor,'circle-stroke-width':2,'circle-stroke-color':'#fffdf6'}});
     m.addLayer({id:'camera-halo',type:'circle',source:'cameras',paint:{'circle-radius':11,'circle-color':'#527f75','circle-opacity':.14,'circle-blur':.6}});
     m.addLayer({id:'camera-points',type:'circle',source:'cameras',paint:{'circle-radius':['interpolate',['linear'],['zoom'],11,3.5,15,5,18,6],'circle-color':'#fafbf6','circle-stroke-width':2,'circle-stroke-color':'#527f75'}});
@@ -112,7 +112,7 @@ const CityMap=forwardRef<CityMapHandle,Props>(function CityMap(props,ref){
  useEffect(()=>{
   if(!loaded)return;
   const m=map.current!;
-  m.setLayoutProperty('hotspot-heat','visibility',props.heat?'visible':'none');
+  for(const id of ['hotspot-heat','hotspot-halo','hotspot-points','hotspot-hit'])m.setLayoutProperty(id,'visibility',props.heat?'visible':'none');
   for(const id of ['camera-halo','camera-points','camera-hit','camera-labels'])m.setLayoutProperty(id,'visibility',props.showCameras?'visible':'none');
  },[loaded,props.heat,props.showCameras]);
  useEffect(()=>{if(loaded)(map.current!.getSource('selected') as GeoJSONSource).setData(props.selected?{type:'FeatureCollection',features:[{type:'Feature',geometry:{type:'Point',coordinates:[props.selected.lon,props.selected.lat]},properties:{}}]}:empty);},[loaded,props.selected]);
