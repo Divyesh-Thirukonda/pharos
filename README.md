@@ -97,4 +97,4 @@ Workshop packaging, the `/app` route, and deployment steps are in the [deploymen
 
 ## Design and research
 
-Read the [design and HCI rationale](design/README.md), [source comparison](design/data-sources.md), [risk model](design/risk-model.md), and [interface-copy guide](design/interface-copy.md). The [color logo](public/pharos-mark.svg), [favicon](public/pharos-favicon.svg), and [monochrome logo](design/pharos-mark-mono.svg) are included. Layout adaptation credits and the exact reference revision are in [third-party notices](THIRD_PARTY_NOTICES.md).
+Read the [design and HCI rationale](design/README.md), [source comparison](design/data-sources.md), [risk model](design/risk-model.md), and [interface-copy guide](design/interface-copy.md). The [color logo](src/assets/pharos-mark.svg), [favicon](src/assets/pharos-favicon.svg), and [monochrome logo](design/pharos-mark-mono.svg) are included. Layout adaptation credits and the exact reference revision are in [third-party notices](THIRD_PARTY_NOTICES.md).

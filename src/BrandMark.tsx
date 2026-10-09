@@ -1,3 +1,6 @@
+import markUrl from './assets/pharos-mark.svg?no-inline';
+import faviconUrl from './assets/pharos-favicon.svg?no-inline';
+
 type MarkProps = {
   size?: number;
   small?: boolean;
@@ -8,7 +11,7 @@ type MarkProps = {
 export function PharosMark({size = 40, small = false, decorative = false, className = ''}: MarkProps) {
   return <img
     className={`pharos-mark ${className}`.trim()}
-    src={`${import.meta.env.BASE_URL}${small ? 'pharos-favicon.svg' : 'pharos-mark.svg'}`}
+    src={small ? faviconUrl : markUrl}
     width={size}
     height={size}
     alt={decorative ? '' : 'PharOS: protective eye and lighthouse'}

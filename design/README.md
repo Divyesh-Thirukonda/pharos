@@ -16,7 +16,7 @@ The lower chevron has been replaced by a lighthouse: a triangular roof, rectangu
 
 The eye outline and tower remain recognizable without gold. The monochrome version uses negative-space bands and `currentColor`. Keep at least six grid units of surrounding clear space. Use the full mark at 32px or larger; the small icon removes wing bands and the doorway to preserve its silhouette. Do not stretch, rotate, animate the pupil, or give the eye a gaze that follows a visitor.
 
-Assets: [color mark](../public/pharos-mark.svg), [small icon and favicon](../public/pharos-favicon.svg), and [monochrome mark](pharos-mark-mono.svg). The [React lockup](../src/BrandMark.tsx) exports `Logo` by default and a named `PharosMark`. The lockup contains only the icon and the text “PharOS”; the icon is decorative when the wordmark already names the product. A standalone mark has an accessible name.
+Assets: [color mark](../src/assets/pharos-mark.svg), [small icon and favicon](../src/assets/pharos-favicon.svg), and [monochrome mark](pharos-mark-mono.svg). The [React lockup](../src/BrandMark.tsx) exports `Logo` by default and a named `PharosMark`. The lockup contains only the icon and the text “PharOS”; the icon is decorative when the wordmark already names the product. A standalone mark has an accessible name.
 
 ## Material and color
 
