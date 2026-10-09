@@ -153,8 +153,8 @@ def test_capture_keeps_hls_input_and_transcoding_bounded(tmp_path, monkeypatch):
     _, data = asyncio.run(vision.capture_video(job, tmp_path))
     assert received[received.index("-i") + 1] == vision.CAMERAS[0]["streamUrl"]
     assert received[received.index("-protocol_whitelist") + 1] == "http,https,tcp,tls,crypto"
-    assert received[received.index("-t") + 1] == "8"
-    assert received[received.index("-vf") + 1] == "scale='min(640,iw)':-2,fps=4"
+    assert received[received.index("-t") + 1] == "4"
+    assert received[received.index("-vf") + 1] == "scale='min(640,iw)':-2,fps=8"
     assert received[received.index("-fs") + 1] == str(vision.MAX_VIDEO_BYTES)
     assert job["video"]["bytes"] == len(data)
     assert job["video"]["sourceCapturedAt"] is None

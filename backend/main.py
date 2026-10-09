@@ -26,7 +26,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
-from backend.search import create_retrieval_plan
+from backend.search import create_retrieval_plan, candidate_relevance
 
 ROOT = Path(__file__).resolve().parent.parent
 CACHE_DIR = Path(os.getenv("PHAROS_CACHE_DIR", str(ROOT / "backend" / ".cache")))
@@ -430,7 +430,28 @@ async def evidence_search(body: SearchRequest):
                 if clip:
                     candidates[clip["id"]] = clip
                     ranks[clip["id"]] += 1 / (60 + rank + 1)
-        clips = [{**candidates[key], "verificationStatus": "not_analyzed"} for key in sorted(candidates, key=lambda key: ranks[key], reverse=True)[:18]]
+        from . import vision
+        # Reuse only actual, still-available archive reviews of this exact
+        # query and source. No source IDs or demo answers are configured here.
+        checked = {}
+        criterion = body.query.strip().casefold()
+        for job in vision.jobs.values():
+            if (job.get("status") == "completed" and job.get("source", {}).get("sourceKind") == "recorded_video"
+                    and job.get("query", "").strip().casefold() == criterion
+                    and time.time() - job.get("_createdEpoch", 0) < vision.JOB_TTL_SEC
+                    and (vision.JOB_DIR / job["id"] / "window.mp4").is_file()):
+                checked[job["source"]["id"]] = job
+        def priority(key):
+            verdict = checked.get(key, {}).get("analysis", {}).get("verdict")
+            return (1 if verdict == "supported" else -1 if verdict == "not_observed" else 0,
+                    candidate_relevance(body.query, candidates[key]["description"]), ranks[key])
+        clips = []
+        for key in sorted(candidates, key=priority, reverse=True)[:18]:
+            job = checked.get(key)
+            clip = {**candidates[key], "verificationStatus": job["analysis"]["verdict"] if job and job.get("analysis") else "not_analyzed"}
+            if job and job.get("mediaUrl"):
+                clip.update(mediaUrl=job["mediaUrl"], mediaStartSec=0, analysisJobId=job["id"])
+            clips.append(clip)
         # Keep only a bounded allowlist of sources actually returned by this authenticated search.
         for clip in clips:
             evidence_records[clip["id"]] = clip

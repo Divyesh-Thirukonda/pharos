@@ -73,3 +73,48 @@ def test_partial_retrieval_retains_successful_candidates(monkeypatch):
     assert result["partialSearch"] is True
     assert result["candidateCount"] == 1
     assert result["eventCount"] is None
+
+
+def test_distracted_walker_ranking_keeps_phone_with_walking_actor():
+    query = "distracted walker almost hit"
+    walking = search.candidate_relevance(query, "A pedestrian walks across the road looking at a phone. A car drives past.")
+    ordinary = search.candidate_relevance(query, "Pedestrians cross a crosswalk. A car drives past.")
+    unrelated_phone = search.candidate_relevance(query, "A cyclist stands by a bicycle with a mounted phone. Pedestrians walk in the background.")
+    assert walking > ordinary
+    assert walking > unrelated_phone
+    assert search.lexical_plan(query)["requiredEvidence"]
+
+
+def test_obstruction_ranking_requires_blockage_at_requested_location():
+    query = "Obstructed crosswalk"
+    obstruction = search.candidate_relevance(query, "A barricade partially blocks the crosswalk.")
+    lane = search.candidate_relevance(query, "A van obstructs the lane. Pedestrians cross the crosswalk.")
+    ordinary = search.candidate_relevance(query, "Pedestrians cross the crosswalk beside a parked truck.")
+    assert obstruction > lane
+    assert obstruction > ordinary
+
+
+def test_real_cached_review_promotes_only_same_query_source(monkeypatch, tmp_path):
+    import time
+    from backend import vision
+    monkeypatch.delenv('WANDB_API_KEY', raising=False)
+    rows = [{'source': 's3://team/ordinary.mp4'}, {'source': 's3://team/phone.mp4'}]
+    clip = main.normalize_clip(rows[1])
+    directory = tmp_path / 'verified'
+    directory.mkdir()
+    (directory / 'window.mp4').write_bytes(b'actual analyzed fixture')
+    monkeypatch.setattr(vision, 'JOB_DIR', tmp_path)
+    monkeypatch.setattr(vision, 'jobs', {'verified': {'id': 'verified', 'status': 'completed', 'query': 'Pedestrian phone crossing',
+        'source': {'id': clip['id'], 'sourceKind': 'recorded_video'}, '_createdEpoch': time.time(),
+        'analysis': {'verdict': 'supported'}, 'mediaUrl': 'api/vision/jobs/verified/media'}})
+    async def request(path, body):
+        return {'results': rows}
+    monkeypatch.setattr(main, 'vss', types.SimpleNamespace(configured=True, request=request))
+    client = TestClient(main.app)
+    result = client.post('/api/evidence/search', json={'query': 'Pedestrian phone crossing'}).json()
+    assert result['clips'][0]['id'] == clip['id']
+    assert result['clips'][0]['verificationStatus'] == 'supported'
+    assert result['clips'][0]['mediaUrl'] == 'api/vision/jobs/verified/media'
+    different = client.post('/api/evidence/search', json={'query': 'pedestrian almost hit'}).json()
+    assert all(c['verificationStatus'] == 'not_analyzed' for c in different['clips'])
+    assert all(c['mediaUrl'].startswith('api/evidence/') for c in different['clips'])

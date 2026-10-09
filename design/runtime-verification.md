@@ -118,3 +118,27 @@ The initial sidebar release served current application code, but Cloudflare stil
 ## Main URL and heatmap toggle
 
 The main URL is https://team-12-app.thecosmoslabs.com/app/ with no version query. Legacy `v` query parameters are removed by the frontend while preserving other query parameters and the hash. The heatmap control previously hid only the density layer, leaving crash markers visible; H now toggles density, halos, markers, and their hit targets together. The control displays On/Off, repeated keydown events are ignored, and shortcuts do not run while the connections dialog is open or a text field is active. Heat rendering remains visible at close zoom and the crash glow is stronger in the 3D view. The production build succeeds.
+
+
+## Playback and demo query revision — October 9, 2026
+
+The DOT still-image client now checks every second while visible, with an in-flight guard. Nearby HLS playback remains continuous and now uses a smaller live-edge buffer, automatic preloading, and player-module preload on camera hover/focus. Archive and captured MP4s preload automatically. Detection overlays follow decoded video frames through `requestVideoFrameCallback`. Live analysis captures four-second windows at eight fps; it starts another window one second after the preceding review completes. GPU detection results can appear before Cosmos/assessment finish. These are serial video-window jobs, not uninterrupted one-second inference on every broadcast frame.
+
+Search candidate ordering now checks requested actor/action conditions in the indexed descriptions, then uses fused retrieval rank. Phone use by a stationary cyclist or an unrelated actor does not outrank walking phone use. This ordering is retrieval relevance, never verification. The selected archive candidate starts actual NVIDIA review automatically. No demo query shortcut or preset was added.
+
+The exact query `distracted walker almost hit` returned 18 candidates. Three promising phone/walking/traffic candidates were analyzed on the hosted service: `706c3a4bf735431dbe63390e61bdc6e1`, `98d2b43bb8d94926adb205522deb998e`, and `bdf75b6940864299963e413f2a61df52`. All returned `not_observed`. The first shows a phone user with an SUV passing behind, without clear evasive action; the other two do not resolve the requested conjunction. A genuine distracted-walker near miss has **not** been established from this archive. Do not pitch the demo query as a verified successful match.
+
+Production build and 79 tests passed (63 backend, 16 frontend), including the actor-specific ranking regression and bounded four-second/eight-fps live capture.
+
+
+The user replaced the almost-hit criterion with two short observable-risk demos: `Pedestrian phone crossing` and `Obstructed crosswalk`. The assessment instruction now explicitly prohibits adding an unrequested near-miss or vehicle-conflict requirement to a simpler behavior/obstruction question. A matching, completed archive review can promote a retrieved clip, serve its actual prepared MP4, and reuse the review for the exact query/source while its capture remains available (30-minute bounded cache). This never applies to completed live-camera jobs. Nothing pins source IDs or demo answers in the frontend or backend. The actor/action and requested-obstruction-location ranking regressions, plus exact-query cached-review isolation, are covered by backend tests.
+
+
+### Verified two-prompt demos
+
+- **Pedestrian phone crossing** — source `c0a94d1895faab1b850918d8`, job `4a7405c09d204ccc8a5e62353ddba3dd`; `supported`. The pedestrian is clearly using his phone while crossing the street. Analyzed MP4 SHA256 `eeb9f39b3ac0a1aa83b746fdbc124e1898fd9f3ce34c43e34ab094a465441676`; 5.0 seconds, 8.0 fps. Total inference pipeline 11.033 seconds. Models: NVIDIA Cosmos3 Nano Reasoner, YOLO11, W&B Llama 3.3 70B.
+- **Obstructed crosswalk** — source `2fe3bd2df3ce7669576b6de2`, job `8804af8510b048408d6ca28319dc97a5`; `supported`. The crosswalk is partially obstructed by a red construction barrier and orange traffic cones. Pedestrians are crossing the street despite the obstruction. A traffic controller is present and holding an orange flag. The white van is stopped at the intersection. Analyzed MP4 SHA256 `4a31bbb06ea83896bdd53062af6d79fbfb8680ace45067fbabe133085f09942f`; 5.0 seconds, 8.0 fps. Total inference pipeline 11.703 seconds. Models: NVIDIA Cosmos3 Nano Reasoner, YOLO11, W&B Llama 3.3 70B.
+
+Both exact prompts were entered into the hosted Review UI, each selected its actual reviewed clip as candidate 01, and both MP4s reached `readyState=4` with the full five seconds buffered. Native video playback was checked visually: the phone user is visible crossing, and the barrier/barrels are visibly within the crossing. No collision or near miss was claimed. The later single-player refinement removes the initial source player once the analyzed capture is available and collapses repeated observations under **Observed signals**.
+
+The new live capture was 4.0 seconds at 8.0 fps, 352×240, 144,236 bytes. Full job took 7.895 seconds with no component errors. This establishes working faster window inference, **not one-second streaming inference or all-broadcast-frame coverage**.

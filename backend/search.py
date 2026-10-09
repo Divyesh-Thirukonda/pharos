@@ -26,7 +26,7 @@ def lexical_plan(query: str) -> dict:
         queries.append("vehicle pedestrian cyclist crossing paths close pass sudden braking evasive movement")
         conditions.append("A close interaction with converging paths or evasive action must be visible; simple proximity is insufficient.")
     if re.search(r"distract|phone|texting", lower):
-        queries.append("driver pedestrian visible phone use looking down lane drift crossing")
+        queries.append("pedestrian walking across traffic while using a phone vehicle approaching close pass")
         conditions.append("Phone use or the requested observable behavior must itself be visible, separately from any conflict.")
         limits.append("Attention cannot be inferred from appearance; a distant camera may not resolve a phone or a driver's actions.")
     if re.search(r"speed|fast|reckless", lower):
@@ -69,3 +69,26 @@ async def create_retrieval_plan(query: str) -> dict:
             return {**plan, "originalQuery": query, "planner": "wandb", "model": model}
     except (httpx.HTTPError, ValueError, KeyError, TypeError):
         return fallback
+
+
+def candidate_relevance(query: str, description: str) -> int:
+    """Rank indexed descriptions against conditions; this is not event verification."""
+    q, text = query.lower(), description.lower()
+    score = 0
+    walking = bool(re.search(r"walker|pedestrian|walking|person", q))
+    distraction = bool(re.search(r"distract|phone|texting", q))
+    if walking:
+        score += 2 if re.search(r"pedestrian|walks|walking|crosses|crossing", text) else -2
+    if distraction:
+        # Keep the actor and action in one sentence; a cyclist with a mounted
+        # phone elsewhere in the scene is not a walking-phone-use candidate.
+        sentences = re.split(r"[.!?]", text)
+        matches = [sentence for sentence in sentences if re.search(r"phone|texting", sentence)]
+        actor_match = any(re.search(r"pedestrian|walks|walking|crosses|crossing", sentence) for sentence in matches)
+        score += 8 if (actor_match if walking else matches) else -4
+    if re.search(r"near[ -]?miss|almost|close call", q):
+        score += 4 if re.search(r"nearly|narrowly|evasiv|swerv|sudden.*brak|almost hit|near.miss", text) else 0
+    if re.search(r"obstruct|block", q):
+        location = r"crosswalk|crossing" if re.search(r"crosswalk|crossing", q) else r"lane|road|sidewalk"
+        score += 8 if any(re.search(location, sentence) and re.search(r"obstruct|block", sentence) for sentence in re.split(r"[.!?]", text)) else -2
+    return score

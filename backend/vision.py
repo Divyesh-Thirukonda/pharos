@@ -26,8 +26,9 @@ JOB_DIR = Path(os.getenv("PHAROS_CACHE_DIR", str(ROOT / "backend" / ".cache"))) 
 MAX_JOBS, MAX_ACTIVE, MAX_QUEUED = 24, 2, 4
 JOB_TTL_SEC, MAX_DISK_BYTES = 1800, 150 * 1024 * 1024
 MAX_INPUT_BYTES, MAX_VIDEO_BYTES = 40 * 1024 * 1024, 8 * 1024 * 1024
-CAPTURE_SECONDS, SAMPLE_FPS = 8, 4
-CRITERIA_RULE = """Evaluate ALL requested conditions together. A supported verdict requires EVERY condition to be visibly supported for the same relevant actor and the same interaction; never combine unrelated actors or moments. For example, 'near miss pedestrian on phone' requires BOTH a supported close conflict (converging paths or visible evasive action; proximity alone is insufficient) AND directly visible phone use by that pedestrian during that interaction. A near miss alone, a phone user elsewhere, or a downward gaze is insufficient. If any condition is visibly absent, the complete requested event is not observed. If any condition cannot be resolved, the complete request is uncertain. Name which conditions are supported, absent, or unresolved; never upgrade the conjunction because one component is present."""
+CAPTURE_SECONDS, SAMPLE_FPS = 8, 8
+LIVE_CAPTURE_SECONDS = 4
+CRITERIA_RULE = """Evaluate ONLY the conditions explicitly requested by the user. Do not add a collision, near miss, vehicle conflict, distraction, or speed requirement to a request that does not ask for it. Uncertainty about unrelated scene activity must not downgrade a clearly observed requested behavior. For example, a request about walking phone use does not require an almost-hit event; an obstructed crossing does not require a collision. Evaluate ALL requested conditions together. A supported verdict requires EVERY condition to be visibly supported for the same relevant actor and the same interaction; never combine unrelated actors or moments. For example, 'near miss pedestrian on phone' requires BOTH a supported close conflict (converging paths or visible evasive action; proximity alone is insufficient) AND directly visible phone use by that pedestrian during that interaction. A near miss alone, a phone user elsewhere, or a downward gaze is insufficient. If any condition is visibly absent, the complete requested event is not observed. If any condition cannot be resolved, the complete request is uncertain. Name which conditions are supported, absent, or unresolved; never upgrade the conjunction because one component is present."""
 TEMPORAL_RULE = """A near miss, traffic conflict, closing approach, close pass, yielding failure or evasive action requires motion evidence across multiple frames, with at least one bounded video-relative start/end interval for that interaction. A single frame or unresolved timing cannot establish that motion event: use uncertain, even if proximity looks concerning. Describe actor positions before and after within the interval, or state that temporal evidence is unresolved. Never invent timestamps to satisfy this requirement."""
 jobs: dict[str, dict] = {}
 tasks: set[asyncio.Task] = set()
@@ -157,6 +158,13 @@ async def create_job(body: VisionRequest):
     existing = next((j for j in active if j["source"]["id"] == source["id"] and j["query"] == body.query), None)
     if existing:
         return {"id": existing["id"], "status": existing["status"], "pollUrl": f"api/vision/jobs/{existing['id']}", "reusedActiveJob": True}
+    if body.evidenceId:
+        completed = next((j for j in reversed(list(jobs.values()))
+                          if j["status"] == "completed" and j["source"]["id"] == source["id"]
+                          and j["query"].strip().casefold() == body.query.strip().casefold()
+                          and (JOB_DIR / j["id"] / "window.mp4").is_file()), None)
+        if completed:
+            return {"id": completed["id"], "status": "completed", "pollUrl": f"api/vision/jobs/{completed['id']}", "reusedRecordedReview": True}
     job_id = uuid.uuid4().hex
     job = {"id": job_id, "status": "queued", "stage": "Waiting for video worker", "query": body.query, "source": source, "createdAt": now(), "captureStartedAt": None, "captureEndedAt": None, "completedAt": None, "models": {}, "timings": {}, "errors": [], "_createdEpoch": time.time(), "_evidenceId": body.evidenceId}
     jobs[job_id] = job
@@ -265,7 +273,7 @@ async def capture_video(job: dict, directory: Path) -> tuple[Path, bytes]:
             record_service_result("vss", False, error_message(exc))
             raise
         arguments += ["-i", str(raw)]
-    arguments += ["-t", str(CAPTURE_SECONDS), "-map", "0:v:0", "-an", "-vf", "scale='min(640,iw)':-2,fps=4", "-c:v", "libx264", "-preset", "ultrafast", "-crf", "24", "-pix_fmt", "yuv420p", "-threads", "1", "-movflags", "+faststart", "-fs", str(MAX_VIDEO_BYTES), str(output)]
+    arguments += ["-t", str(LIVE_CAPTURE_SECONDS if job["source"]["sourceKind"] == "live_video" else CAPTURE_SECONDS), "-map", "0:v:0", "-an", "-vf", f"scale='min(640,iw)':-2,fps={SAMPLE_FPS}", "-c:v", "libx264", "-preset", "ultrafast", "-crf", "24", "-pix_fmt", "yuv420p", "-threads", "1", "-movflags", "+faststart", "-fs", str(MAX_VIDEO_BYTES), str(output)]
     try:
         await ffmpeg_run(arguments)
     finally:
@@ -277,7 +285,7 @@ async def capture_video(job: dict, directory: Path) -> tuple[Path, bytes]:
     data = output.read_bytes()
     job["captureEndedAt"] = now()
     job["timings"]["captureMs"] = round((time.monotonic() - start) * 1000)
-    job["video"] = {**metadata, "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data), "sampling": "Video transcoded to 4 fps, at most 640 pixels wide; video-relative timestamps refer to this exact analyzed window.", "sourceCapturedAt": None, "captureClock": "server_acquisition_time"}
+    job["video"] = {**metadata, "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data), "sampling": "Video transcoded to 8 fps, at most 640 pixels wide; video-relative timestamps refer to this exact analyzed window.", "sourceCapturedAt": None, "captureClock": "server_acquisition_time"}
     job["mediaUrl"] = f"api/vision/jobs/{job['id']}/media"
     return output, data
 

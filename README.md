@@ -49,7 +49,7 @@ Street names are normalized and grouped as pairs; map positions use median repor
 
 Hourly bars count **all reported crashes with a known local `crash_time`**, not only injury crashes or camera events. The Manhattan chart includes deduplicated records excluded from map placement; an intersection chart uses only its matched group. Missing or invalid times are counted separately. Bars are time-of-day totals over the displayed historical period, not an hourly live incident timeline or exposure-adjusted risk.
 
-Up to three [NYC DOT cameras](https://webcams.nyctmc.org/map) within **180 m** may be associated with an intersection. Proximity does not guarantee that the camera sees the crossing, and camera direction may change. The selected public image refreshes every **15 seconds while the page is visible**. “Image loaded” is the browser retrieval time; the provider supplies no capture timestamp. These are still images, not continuous video. Developer data-feed access is subject to NYC DOT's [subscriber agreement](https://webcams.nyctmc.org/subscribers).
+Up to three [NYC DOT cameras](https://webcams.nyctmc.org/map) within **180 m** may be associated with an intersection. Proximity does not guarantee that the camera sees the crossing, and camera direction may change. The selected public image refreshes once per **second while visible**, without overlapping unfinished requests. “Image loaded” is the browser retrieval time; the provider supplies no capture timestamp. These are still images, not continuous video. Developer data-feed access is subject to NYC DOT's [subscriber agreement](https://webcams.nyctmc.org/subscribers).
 
 The demo focus uses the official [6 Ave @ 23 St camera](https://webcams.nyctmc.org/map?cameras=fcc24aa5-4da0-48f2-aa43-e70e4677517c) at 40.7429026, −73.9927978. It supplies still images. The nearest verified continuous feeds are West Street / West 14th Street, about 1.34 km away, and West Street / West 23rd Street, about 1.38 km away. Neither provides exact coverage of the focus intersection.
 
@@ -79,7 +79,7 @@ The status panel uses `/api/system/status`. Cosmos/YOLO statuses reflect authent
 ## Demo in three steps
 
 1. In **City**, open the **6th Ave & West 23rd St** focus card. **Camera area** shows its still image, matched history, hourly reports, factors, and next steps. **Copy general guidance** copies those general recommendations, not the generated assessment.
-2. Return to **City** and choose a **Live nearby** feed. Monitoring starts bounded analyses while visible, at least 30 seconds apart after the previous job finishes. Compare the result with its analyzed footage and optional image-plane projections. Use **Monitor off** to pause new requests.
+2. Return to **City** and choose a **Live nearby** feed. Monitoring starts a new four-second window one second after the previous review finishes, while visible. Object detection samples eight frames per second; results arrive as the models finish. This is repeated window inference, not one-second streaming inference. Compare the result with its analyzed footage and optional image-plane projections. Use **Monitor off** to pause new requests.
 3. Open **Review**, search for an interaction, inspect **Search criteria**, and analyze a candidate's actual footage. Open **Sources & connections** to inspect service status. A search match is not a verified near miss.
 
 ## Build and checks
